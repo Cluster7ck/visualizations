@@ -73,7 +73,7 @@ Shader "LE/RayMarch"
 
             float DE(float3 pos, float Power, float Bailout, int Iterations) {
                 float3 z = pos;
-                float dr = 1.0;
+                float dr = 1;
                 float r = 0.0;
                 for (int i = 0; i < Iterations; i++) {
                     r = length(z);
@@ -86,15 +86,15 @@ Shader "LE/RayMarch"
 
                     // scale and rotate the point
                     float zr = pow(r, Power);
-                    float v = 
-                    theta = pow(theta, mTime(5, 1, 2.5)) * Power;
+                    float v = mTime(5, 0.01, 1);
+                    theta = pow(theta, v) * Power;
                     phi = phi * Power;
 
                     // convert back to cartesian coordinates
                     z = zr * float3(sin(theta) * cos(phi), sin(phi ) * sin(theta), cos(theta));
                     z += pos;
                 }
-                return 0.5 * log(r) * r / dr;
+                return mTime(15,0.1,0.7) * log(r) * r / dr;
             }
 
             float torus(float3 p, float ro, float ri)
@@ -104,8 +104,8 @@ Shader "LE/RayMarch"
 
             float GetDist(float3 p)
             {
-                float v = (sin(_Time.y/5) + 1) / 2;
-                return DE(p, map(v,0,1,1,15), 3, 512);
+                float v = mTime(4,0.05,1);//(sin(_Time.y) + 1) / 2;
+                return DE(p, map(v,0,1,1,14), 3, 512);
                 //return torus(p, 0.2, 0.1);
             }
 
@@ -149,7 +149,11 @@ Shader "LE/RayMarch"
                 {
                     float3 p = ro + rd * d;
                     float3 n = GetNormal(p);
-                    col.rgb = float3(1-n.x,1-n.y,1-n.z);
+                    float3 ab = abs(n);
+                    float tx = mTime(3,0,1);
+                    float ty = mTime(4,0,1);
+                    float tz = mTime(5,0,1);
+                    col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,1-ab.z);
                 }
                 else {
                     discard;
