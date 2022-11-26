@@ -5,6 +5,13 @@ Shader "LE/RayMarch"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _Speed ("Float display name", Float) = 0
+        _ColorPowerR ("Float display name", Float) = 1
+        _ColorPowerG ("Float display name", Float) = 1
+        _ColorPowerB ("Float display name", Float) = 1
+        _Spikyness ("Float display name", Float) = 0.1
+        _Lobsidedness ("Float display name", Float) = 0
+        _Size ("Float display name", Float) = 0.0
     }
     SubShader
     {
@@ -38,6 +45,13 @@ Shader "LE/RayMarch"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float _Speed;
+            float _ColorPowerR;
+            float _ColorPowerG;
+            float _ColorPowerB;
+            float _Spikyness;
+            float _Lobsidedness;
+            float _Size;
 
             v2f vert (appdata v)
             {
@@ -63,7 +77,7 @@ Shader "LE/RayMarch"
 
             float time01(float div)
             {
-                return (sin(_Time.y / div) + 1) / 2;
+                return (sin((_Time.y+_Speed) / div) + 1) / 2;
             }
 
             float mTime(float div, float low, float high)
@@ -80,12 +94,13 @@ Shader "LE/RayMarch"
                     if (r > Bailout) break;
 
                     // convert to polar coordinates
-                    float theta = acos(z.z / r);
-                    float phi = atan2(z.y, z.x);
+                    float x = acos(z.z / r);
+                    float theta = atan2(x, z.y * _Lobsidedness);
+                    float phi = atan2(z.y, z.x) * 2;
                     dr = pow(r, Power - 1.0) * Power * dr + 1.0;
 
                     // scale and rotate the point
-                    float zr = pow(r, Power);
+                    float zr = pow(r*(1 - (0.1 * _Size)), Power);
                     float v = mTime(5, 0.01, 1);
                     theta = pow(theta, v) * Power;
                     phi = phi * Power;
@@ -105,7 +120,7 @@ Shader "LE/RayMarch"
             float GetDist(float3 p)
             {
                 float v = mTime(4,0.05,1);//(sin(_Time.y) + 1) / 2;
-                return DE(p, map(v,0,1,1,14), 3, 512);
+                return DE(p, map(v,0,1,1,14), 3, 256);
                 //return torus(p, 0.2, 0.1);
             }
 
@@ -150,10 +165,11 @@ Shader "LE/RayMarch"
                     float3 p = ro + rd * d;
                     float3 n = GetNormal(p);
                     float3 ab = abs(n);
-                    float tx = mTime(3,0,1);
-                    float ty = mTime(4,0,1);
-                    float tz = mTime(5,0,1);
-                    col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,1-ab.z);
+                    float tx = pow(mTime(3,0,1), _ColorPowerR);
+                    float ty = pow(mTime(4,0,1), _ColorPowerG);
+                    float tz = pow(mTime(5,0,1), _ColorPowerB);
+                    //col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,ab.z*tz);
+                    col.rgb = float3(ab.x,(1-ty)-ab.y, ab.z * tz);
                 }
                 else {
                     discard;
