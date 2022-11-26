@@ -1,0 +1,108 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel RDFMain
+
+RWStructuredBuffer<float2> Cells;
+RWTexture2D<float4> Result;
+
+int sizeL;
+
+float dA;
+float dB;
+float feed;
+float k;
+float time;
+float m;
+int iterations;
+int centerY;
+int centerX;
+
+int kaleido;
+static const float PI = 3.14159265f;
+
+float map(float s, float a1, float a2, float b1, float b2)
+{
+    return b1 + (s-a1)*(b2-b1)/(a2-a1);
+}
+
+float3 HUEtoRGB(in float H)
+{
+    float R = abs(H * 6 - 3) - 1;
+    float G = 2 - abs(H * 6 - 2);
+    float B = 2 - abs(H * 6 - 4);
+    return saturate(float3(R,G,B));
+}
+
+float3 HSVtoRGB(in float3 HSV)
+{
+    float3 RGB = HUEtoRGB(HSV.x);
+    return ((RGB - 1) * HSV.y + 1) * HSV.z;
+}
+
+[numthreads(32,32,1)]
+void RDFMain (uint3 id : SV_DispatchThreadID)
+{
+    float hs = sizeL/2.0;
+    float dist = distance(float2(id.x,id.y), float2(centerX,centerY));
+
+    float2 spot = Cells[id.x + id.y * sizeL];
+
+    float a = spot.x;
+    float b = spot.y;
+
+    float sm = ((1 - 4 * m) / 4);
+    m = 0.2;
+    sm = 0.05;
+    //float sm2 = sm / 2;
+
+    float laplaceA = 0;
+    laplaceA += a * -1;
+    laplaceA += Cells[id.x+1 + id.y*sizeL].x * m;
+    laplaceA += Cells[id.x-1 + id.y*sizeL].x * m;
+    laplaceA += Cells[id.x   + (id.y+1) * sizeL].x * m;
+    laplaceA += Cells[id.x   + (id.y-1) * sizeL].x * m;
+    laplaceA += Cells[id.x-1 + (id.y-1) * sizeL].x * sm;
+    laplaceA += Cells[id.x+1 + (id.y-1) * sizeL].x * sm;
+    laplaceA += Cells[id.x-1 + (id.y+1) * sizeL].x * sm;
+    laplaceA += Cells[id.x+1 + (id.y+1) * sizeL].x * sm;
+
+    float laplaceB = 0;
+    laplaceB += b*-1;
+    laplaceB += Cells[id.x+1 + id.y*sizeL].y * m;
+    laplaceB += Cells[id.x-1 + id.y*sizeL].y * m;
+    laplaceB += Cells[id.x   + (id.y+1) * sizeL].y * m;
+    laplaceB += Cells[id.x   + (id.y-1) * sizeL].y * m;
+    laplaceB += Cells[id.x-1 + (id.y-1) * sizeL].y * sm;
+    laplaceB += Cells[id.x+1 + (id.y-1) * sizeL].y * sm;
+    laplaceB += Cells[id.x-1 + (id.y+1) * sizeL].y * sm;
+    laplaceB += Cells[id.x+1 + (id.y+1) * sizeL].y * sm;
+
+    dB = map(dist*dist,hs*hs*2,0,0.1, dB);
+    spot.x = a + (dA * laplaceA - a*b*b + feed * (1-a)) * 1;
+    spot.y = b + (dB * laplaceB + a*b*b - (k + feed)*b) * 1;
+
+    spot.x = clamp(spot.x, 0.0, 1.0);
+    spot.y = clamp(spot.y, 0.0, 1.0);
+
+    float v = (spot.x - spot.y);
+
+    Cells[id.x + id.y * sizeL].x = spot.x;
+    Cells[id.x + id.y * sizeL].y = spot.y;
+
+    //Result[id.xy] = float4(v,v,v,1);
+    float mappedDist = map(dist*dist,0,hs*hs,0,1);
+    //float3 rgb = float3(v,v,v);
+    //float3 rgb = HSVtoRGB( float3( map(v, 0, 1, map(mappedDist, 0, 1, 0.22, 0.33), map(mappedDist, 0, 1, 0.7, 0.88)), 1, 1-v));
+    float t = time * 0.07;
+    float h = map((sin((v + t) * 4) + 1) / 2.0, 0, 1, 0, 0.8);// 0.667);
+    float s = map((sin(v*time)+1)/2.0, 0, 1, 0.4, 1);
+    float3 rgb = HSVtoRGB(float3(h, s, 1));
+    //cap
+    //v = v < 0.5 ? 0 : v;
+
+    /*
+    map(v, 0, 1, map(mappedDist, 0, 1, 0, 0.89), map(mappedDist, 0, 1, 0.5, 0.6))
+    */
+
+    Result[id.xy] = float4(rgb.x,rgb.y,rgb.z,1);
+    //Result[id.xy] = float4(v,v,v,1);
+}

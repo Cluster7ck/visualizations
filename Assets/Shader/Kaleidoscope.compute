@@ -1,0 +1,50 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel KalMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Input;
+RWTexture2D<float4> Result;
+
+int sizeL;
+int n;
+static const float PI = 3.14159265f;
+
+float div(float a, float b)
+{
+    float r = a / b;
+    return floor(r);
+}
+
+
+float fmod(float a, float b)
+{
+    float x = a / b;
+    return x - floor(x);
+}
+
+[numthreads(32, 32, 1)]
+void KalMain (uint3 id : SV_DispatchThreadID)
+{
+    int ox = id.x - sizeL / 2;
+    int oy = id.y - sizeL / 2;
+
+    float r = sqrt(pow(ox, 2) + pow(oy, 2));
+    float phi = atan2(abs(oy), abs(ox));
+    float sectorAngle = (2 * PI) / n;
+    float remainder = fmod(phi, sectorAngle);
+    float whole = div(phi, sectorAngle);
+
+
+    float isEven = whole % 2;
+    float isOdd = abs(isEven - 1);
+    float oddProjected = phi - whole * sectorAngle;
+    float evenProjected = (1 - remainder) * sectorAngle;
+    float back = (oddProjected * isOdd + evenProjected * isEven);
+    
+    float x = r * cos(back) + sizeL / 2;
+    float y = r * sin(back) + sizeL / 2;
+    
+    float2 ogId = int2(round(x), round(y));
+    Result[id.xy] = Input[ogId.xy];
+}

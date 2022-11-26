@@ -1,0 +1,30 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+StructuredBuffer<int> Input;
+StructuredBuffer<float2> Points;
+StructuredBuffer<float4> Colors;
+
+RWTexture2D<float4> Result;
+
+static float2 points[3] = {float2(0,0), float2(1023,0), float2(512,1023)};
+static float4 colors[5] = {float4(1,0,0,0), float4(0,1,0,0), float4(0,0,1,0), float4(1,1,0,0), float4(0,1,1,0)};
+
+float weight;
+
+[numthreads(16,16,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float2 walkingPoint = Points[Input[(id.y * 1024 + id.x ) % (1024*1024)]];
+    // TODO: insert actual code here!
+    for(int i = 0; i < 20; i++)
+    {
+        walkingPoint = Points[Input[(id.y * 1024 + id.x + i + 1) % (1024*1024)]] * weight + walkingPoint.xy * (1 - weight) ;
+        Result[walkingPoint.xy] = Colors[Input[id.y * 1024 + id.x]];
+    }
+    
+    
+    //Result[id.xy] = float4(id.x & id.y, (id.x & 128)/128.0, (id.y & 128)/128.0, 0.0);
+}
