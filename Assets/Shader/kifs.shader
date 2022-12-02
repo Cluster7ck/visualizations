@@ -3,7 +3,8 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Replicate ("Replicate", Float) = 8.0
+        _Replicate ("Replicate", Float) = 32.0
+        _Zoom ("Replicate", Float) = 1.0
     }
     SubShader
     {
@@ -36,6 +37,7 @@
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _Replicate;
+            float _Zoom;
 
             v2f vert (appdata v)
             {
@@ -71,7 +73,7 @@
                 //uv = abs(uv);
                 float4 col = float4(0,0,0,1);
                 
-                float a = 180/3;
+                float a = 180/_Replicate;
                 //float2 n = N(a/180.0 * 3.1415);
                 /*
                 uv -= n*min(0,dot(uv, n))*2;
@@ -116,7 +118,7 @@
                 //uv.x = clamp(uv.x, 0, 1);
                 //uv.y = clamp(uv.y, 0, 1);
 
-                uv *= 0.6;
+                uv *= _Zoom;
                 col += tex2D(_MainTex, (uv.xy + float2(1.0,1.0) ) / 2.0) * smoothstep(0.99,0.98, r);
                 //col += tex2D(_MainTex, i.uv);
 

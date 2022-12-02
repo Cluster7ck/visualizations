@@ -166,7 +166,7 @@ Shader "LE/RayMarch"
                     float3 n = GetNormal(p);
                     float3 ab = abs(n);
                     float tx = pow(mTime(3,0,1), _ColorPowerR);
-                    float ty = pow(mTime(4,0,1), _ColorPowerG);
+                    float ty = _ColorPowerG;
                     float tz = pow(mTime(5,0,1), _ColorPowerB);
                     //col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,ab.z*tz);
                     col.rgb = float3(ab.x,(1-ty)-ab.y, ab.z * tz);

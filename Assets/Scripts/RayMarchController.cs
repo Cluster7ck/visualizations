@@ -24,8 +24,8 @@ public class RayMarchController : MonoBehaviour
     [Header("Size")]
     [SerializeField] private float sizeTime = 0.2f;
 
-
     private Dictionary<int, Action> channelToAction = new Dictionary<int, Action>();
+    private float[] lastValues = new float[16*128];
 
     private void Start()
     {
@@ -36,8 +36,8 @@ public class RayMarchController : MonoBehaviour
         osc.SetAddressHandler("/lob", OnLobMsg);
 
         channelToAction[0] = () => StartCoroutine(AnimateValue("_Size", sizeTime, curve, 1f, 0));
-        channelToAction[1] = () => AddSpikyness(0.3f);
-        channelToAction[2] = () => StartCoroutine(AnimateValue(colorPropertyName, colorPushtime, colorCurve, 1.0f, 1));
+        channelToAction[1] = () => StartCoroutine(AnimateValue("_ColorPowerG", sizeTime, curve, 1f, 0));
+        channelToAction[2] = () => AddSpikyness(0.25f);
     }
 
     private void OnSpeedMsg(OscMessage msg)
@@ -99,11 +99,17 @@ public class RayMarchController : MonoBehaviour
             {
                 var down = MidiJack.MidiMaster.GetKeyDown((MidiJack.MidiChannel)ch, note);
                 var val = MidiJack.MidiMaster.GetKey((MidiJack.MidiChannel)ch, note);
+                var lastValIdx = ch * 128 + note;
+                var lastValue = lastValues[lastValIdx];
                 if(down)
                 {
-                    Debug.Log($"Ch: {ch} Note: {note} Val: {val}");
                     channelToAction[ch]();
                 }
+                else if(lastValue == 0 && val > 0)
+                {
+                    channelToAction[ch]();
+                }
+                lastValues[lastValIdx] = val;
             }
         }
     }
