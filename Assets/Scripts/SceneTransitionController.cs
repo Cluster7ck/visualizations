@@ -16,6 +16,17 @@ public class SceneTransitionController : MonoBehaviour
         StartCoroutine(LoadScene(startSceneName));
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            #if !UNITY_EDITOR
+            Application.Quit();
+            #endif
+            
+        }
+    }
+
     private IEnumerator LoadScene(string name)
     {
         if(!string.IsNullOrEmpty(currentLoaddedAdditive))

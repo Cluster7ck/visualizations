@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class WorleyBorley : MonoBehaviour
 {
@@ -117,10 +120,12 @@ public class WorleyBorley : MonoBehaviour
         //rdfShader.SetInt("iterations", iterationsPerPoint);
     }
 
+#if UNITY_EDITOR
     private void OnValidate() {
         if(EditorApplication.isPlaying)
             SetValues();
     }
+#endif
 }
 
 public class Boingo
