@@ -134,10 +134,10 @@ public class ReactionDiffusion : MonoBehaviour
         {
              
             time += Time.deltaTime;
-            dB = map(Mathf.Sin(time), -1, 1, 0.28f, 0.535f);
-            dA = map(Mathf.Sin(time * 0.127f), -1, 1, dB+0.13f, 1);
-            feed = map(Mathf.Sin(time * 0.1137f), -1, 1, 0.028f, 0.062f);
-            k = map(Mathf.Sin(time * 0.137f), -1, 1, 0.057f, 0.064f);
+            dB = Ext.Remap(Mathf.Sin(time), -1, 1, 0.28f, 0.535f);
+            dA = Ext.Remap(Mathf.Sin(time * 0.127f), -1, 1, dB+0.13f, 1);
+            feed = Ext.Remap(Mathf.Sin(time * 0.1137f), -1, 1, 0.028f, 0.062f);
+            k = Ext.Remap(Mathf.Sin(time * 0.137f), -1, 1, 0.057f, 0.064f);
             rdfShader.SetFloat("dA", dA);
             rdfShader.SetFloat("dB", dB);
             rdfShader.SetFloat("feed", feed);
@@ -166,11 +166,6 @@ public class ReactionDiffusion : MonoBehaviour
         //rdfShader.SetInt("centerY", Mathf.FloorToInt(map(Screen.height - Input.mousePosition.y,0,Screen.height,0,sizeL)));
         //rdfShader.SetInt("centerX", Mathf.FloorToInt(map(Screen.width - Input.mousePosition.x,0,Screen.width,0,sizeL)));
         //rdfShader.SetInt("centerX",sizeL/2);
-    }
-
-    float map(float s, float a1, float a2, float b1, float b2)
-    {
-        return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
     }
 
     private void OnDisable()

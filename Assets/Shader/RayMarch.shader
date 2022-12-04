@@ -12,6 +12,7 @@ Shader "LE/RayMarch"
         _Spikyness ("Float display name", Float) = 0.1
         _Lobsidedness ("Float display name", Float) = 0
         _Size ("Float display name", Float) = 0.0
+        _ControlledTime ("Controlled Time", Float) = 0.0
     }
     SubShader
     {
@@ -52,6 +53,7 @@ Shader "LE/RayMarch"
             float _Spikyness;
             float _Lobsidedness;
             float _Size;
+            float _ControlledTime;
 
             v2f vert (appdata v)
             {
@@ -77,7 +79,7 @@ Shader "LE/RayMarch"
 
             float time01(float div)
             {
-                return (sin((_Time.y+_Speed) / div) + 1) / 2;
+                return (sin((_ControlledTime+_Speed) / div) + 1) / 2;
             }
 
             float mTime(float div, float low, float high)
@@ -119,7 +121,7 @@ Shader "LE/RayMarch"
 
             float GetDist(float3 p)
             {
-                float v = mTime(4,0.05,1);//(sin(_Time.y) + 1) / 2;
+                float v = mTime(4,0.05,1);//(sin(_ControlledTime) + 1) / 2;
                 return DE(p, map(v,0,1,1,14), 3, 256);
                 //return torus(p, 0.2, 0.1);
             }
