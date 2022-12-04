@@ -5,13 +5,13 @@ Shader "LE/RayMarch"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Speed ("Float display name", Float) = 0
-        _ColorPowerR ("Float display name", Float) = 1
-        _ColorPowerG ("Float display name", Float) = 1
-        _ColorPowerB ("Float display name", Float) = 1
-        _Spikyness ("Float display name", Float) = 0.1
-        _Lobsidedness ("Float display name", Float) = 0
-        _Size ("Float display name", Float) = 0.0
+        _Speed ("Speed", Float) = 0
+        _ColorR ("Red Channel modifier", Float) = 1
+        _ColorG ("Greem Channel modifier", Float) = 1
+        _ColorB ("Blue Channel modifier", Float) = 1
+        _Spikyness ("Spikyness", Float) = 0.1
+        _Lobsidedness ("Lobsidedness", Float) = 0
+        _Size ("Size", Float) = 1.0
         _ControlledTime ("Controlled Time", Float) = 0.0
     }
     SubShader
@@ -47,9 +47,9 @@ Shader "LE/RayMarch"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _Speed;
-            float _ColorPowerR;
-            float _ColorPowerG;
-            float _ColorPowerB;
+            float _ColorR;
+            float _ColorG;
+            float _ColorB;
             float _Spikyness;
             float _Lobsidedness;
             float _Size;
@@ -98,8 +98,8 @@ Shader "LE/RayMarch"
                     // convert to polar coordinates
                     float x = acos(z.z / r);
                     float theta = atan2(x, z.y * _Lobsidedness);
-                    float phi = atan2(z.y, z.x) * _Spikyness;
-                    dr = pow(r, Power - 1.0) * Power * dr + 1.0;
+                    float phi = atan2(z.y, z.x) * 2;//_Spikyness;
+                    dr = pow(r, Power - 0.5) * Power * dr + 1.0;
 
                     // scale and rotate the point
                     float zr = pow(r*(1 - (0.1 * _Size)), Power);
@@ -114,16 +114,22 @@ Shader "LE/RayMarch"
                 return mTime(15,0.1,0.7) * log(r) * r / dr;
             }
 
+            float opSmoothUnion( float d1, float d2, float k ) {
+                float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 );
+                return lerp( d2, d1, h ) - k*h*(1.0-h);
+            }
+
             float torus(float3 p, float ro, float ri)
             {
-                return length(float2(length(p.xz) - ro, p.y)) - ri;
+                return length(float2(length(p.xy) - ro, p.z)) - ri;
             }
 
             float GetDist(float3 p)
             {
-                float v = mTime(4,0.05,1);//(sin(_ControlledTime) + 1) / 2;
-                return DE(p, map(v,0,1,1,14), 3, 256);
-                //return torus(p, 0.2, 0.1);
+                float v = mTime(4, 0.05, 1);//(sin(_ControlledTime) + 1) / 2;
+                float frac = DE(p, map(v,0,1,1,14), 3, 256);
+                float tor =  torus(p, 2.2, 0.05);
+                return opSmoothUnion(frac, tor, 0.5);
             }
 
             float raymarch(float3 ro, float3 rd)
@@ -152,6 +158,11 @@ Shader "LE/RayMarch"
                 return normalize(n);
             }
 
+            float3 pal( in float t, in float3 a, in float3 b, in float3 c, in float3 d )
+            {
+                return a + b*cos( 6.28318*(c*t+d) );
+            }
+
             fixed4 frag(v2f i) : SV_Target
             {
                 float2 uv = i.uv - 0.5;
@@ -167,11 +178,19 @@ Shader "LE/RayMarch"
                     float3 p = ro + rd * d;
                     float3 n = GetNormal(p);
                     float3 ab = abs(n);
-                    float tx = pow(mTime(3,0,1), _ColorPowerR);
-                    float ty = _ColorPowerG;
-                    float tz = pow(mTime(5,0,1), _ColorPowerB);
+                    float tx = pow(mTime(3,0,1), _ColorR);
+                    float ty = _ColorG;
+                    float tz = pow(mTime(5,0,1), _ColorB);
+                    float3 pal_col = pal( (ab.x + ab.y + ab.z ) / 3.0,
+                        float3(0.5,0.5,0.5),
+                        float3(0.5,0.5,0.5),
+                        float3(1.0,1.0,0.5),
+                        float3(0.8,0.90,0.30) );
+
+                    col.rgb = pal_col;
                     //col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,ab.z*tz);
-                    col.rgb = float3(ab.x,ab.y, ab.z);
+                    //col.rgb = float3(1 - ab.x, 1 - ab.y, 1 - ab.z);
+                    //col.rgb = float3(1 - ab.x, 1 - ab.y, 1 - ab.z);
                 }
                 else {
                     discard;

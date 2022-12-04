@@ -71,7 +71,7 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
 
     private void OnKickMsg(OscMessage msg)
     {
-        StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat, sizeProp, cfg.sizeTime, cfg.sizeCurve, 1f, 0));
+        StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat, sizeProp, cfg.sizeTime, cfg.sizeCurve, 1f, 1f));
     }
 
     private void OnColorMsg(OscMessage msg)
