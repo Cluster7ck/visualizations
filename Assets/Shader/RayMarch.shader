@@ -96,7 +96,7 @@ Shader "LE/RayMarch"
                     // convert to polar coordinates
                     float x = acos(z.z / r);
                     float theta = atan2(x, z.y * _Lobsidedness);
-                    float phi = atan2(z.y, z.x) * 2;
+                    float phi = atan2(z.y, z.x) * _Spikyness;
                     dr = pow(r, Power - 1.0) * Power * dr + 1.0;
 
                     // scale and rotate the point
@@ -169,7 +169,7 @@ Shader "LE/RayMarch"
                     float ty = _ColorPowerG;
                     float tz = pow(mTime(5,0,1), _ColorPowerB);
                     //col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,ab.z*tz);
-                    col.rgb = float3(ab.x,(1-ty)-ab.y, ab.z * tz);
+                    col.rgb = float3(ab.x,ab.y, ab.z);
                 }
                 else {
                     discard;

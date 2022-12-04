@@ -68,7 +68,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float4 content = TrailMap[int2(newPos.x,newPos.y)];
     float3 d = agent.deposit;
     float4 n = float4(clamp(content.x+d.x,0,1),
-                      clamp(content.y+d.y,0,1),
+                      clamp(1- (content.y+d.y),0,1),
                       clamp(content.z+d.z,0,1),
                       1);
 

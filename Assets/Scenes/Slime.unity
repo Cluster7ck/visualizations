@@ -331,7 +331,7 @@ MonoBehaviour:
   trailMapProcessShader: {fileID: 7200000, guid: 0c5ebd4fc6a28794680a64384a343087,
     type: 3}
   kaleidoscopeShader: {fileID: 7200000, guid: f225b9cacdd869d4bac3b59e6860e67c, type: 3}
-  size: 1048
+  size: 512
   sensorSize: 3
   sensorAngleSpacing: 0.392
   sensorOffset: 10
@@ -570,7 +570,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8d75bfae5614ddc49be1cc2366c1cd61, type: 2}
+  - {fileID: 2100000, guid: ac3dc4817740b23408b3e856aa2aae18, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

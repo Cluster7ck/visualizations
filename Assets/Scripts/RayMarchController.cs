@@ -18,7 +18,8 @@ public class RayMarchController : MonoBehaviour
     [SerializeField] private AnimationCurve spikeIncreaseCurve;
     [SerializeField] private float spikeDecreaseSpeed;
     private const float minSpikyness = 0.1f;
-    private float spikyness = 0.1f;
+    [SerializeField] private float addSpikyness = 0.1f;
+     private float spikyness = 0.1f;
     private bool spikeIncreasing = false;
 
     [Header("Size")]
@@ -30,10 +31,10 @@ public class RayMarchController : MonoBehaviour
     private void Start()
     {
         rend.material.SetFloat("_Spikyness", minSpikyness);
-        osc.SetAddressHandler("/speed", OnSpeedMsg);
+        osc.SetAddressHandler("/kick", OnSpeedMsg);
         osc.SetAddressHandler("/color", OnColorMsg);
         osc.SetAddressHandler("/spike", OnSpikeMsg);
-        osc.SetAddressHandler("/lob", OnLobMsg);
+        osc.SetAddressHandler("/snare", OnLobMsg);
 
         channelToAction[0] = () => StartCoroutine(AnimateValue("_Size", sizeTime, curve, 1f, 0));
         channelToAction[1] = () => StartCoroutine(AnimateValue("_ColorPowerG", sizeTime, curve, 1f, 0));
@@ -42,8 +43,7 @@ public class RayMarchController : MonoBehaviour
 
     private void OnSpeedMsg(OscMessage msg)
     {
-        float x = msg.GetFloat(0);
-        StartCoroutine(AnimateValue("_Speed", 0.1f, curve, 0.5f, 0));
+        StartCoroutine(AnimateValue("_Size", sizeTime, curve, 1f, 0));
     }
 
     private void OnColorMsg(OscMessage msg)
@@ -60,9 +60,8 @@ public class RayMarchController : MonoBehaviour
 
     private void OnLobMsg(OscMessage msg)
     {
-        float lobsidedness = msg.GetFloat(0);
-        Debug.Log("Lob: "+lobsidedness);
-        rend.material.DOFloat(lobsidedness, "_Lobsidedness", 5);
+        AddSpikyness(addSpikyness);
+        StartCoroutine(AnimateValue("_ColorPowerG", sizeTime, curve, 1f, 0));
     }
 
     private void AddSpikyness(float additionalSpikyness)

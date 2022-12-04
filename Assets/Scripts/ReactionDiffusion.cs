@@ -26,7 +26,7 @@ public class ReactionDiffusion : MonoBehaviour
 
     public Renderer rend;
     private RenderTexture texture;
-    private RenderTexture kaleidoscopeTexture;
+    public RenderTexture kaleidoscopeTexture;
 
     private ComputeBuffer cellBuffer;
     private Vector2[] grid;

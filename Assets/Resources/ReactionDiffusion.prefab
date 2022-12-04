@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5458739729365066214
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5458739729365066136}
+  - component: {fileID: 5458739729365066215}
+  m_Layer: 0
+  m_Name: ReactionDiffusion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5458739729365066136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5458739729365066214}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5458739729365066215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5458739729365066214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e869004837331124bb4c5769e3ac714a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rdfShader: {fileID: 7200000, guid: 6ceb1da60cbf68743801995c1afae156, type: 3}
+  kaleidoscopeShader: {fileID: 7200000, guid: f225b9cacdd869d4bac3b59e6860e67c, type: 3}
+  sizeL: 1024
+  dA: 0.41222242
+  dB: 0.2800091
+  feed: 0.036
+  k: 0.057099342
+  m: 0.2
+  kaleidoscopeSplit: 8
+  circlePoints: 9
+  pointWidth: 100
+  iterationsPerPoint: 1
+  rend: {fileID: 0}
+  doIt: 0
