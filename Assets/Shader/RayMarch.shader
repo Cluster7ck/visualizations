@@ -13,6 +13,7 @@ Shader "LE/RayMarch"
         _Lobsidedness ("Lobsidedness", Float) = 0
         _Size ("Size", Float) = 1.0
         _ControlledTime ("Controlled Time", Float) = 0.0
+        _Hats ("Hats", Float) = 0.0
     }
     SubShader
     {
@@ -53,6 +54,7 @@ Shader "LE/RayMarch"
             float _Spikyness;
             float _Lobsidedness;
             float _Size;
+            float _Hats;
             float _ControlledTime;
 
             v2f vert (appdata v)
@@ -113,22 +115,56 @@ Shader "LE/RayMarch"
                 }
                 return mTime(15,0.1,0.7) * log(r) * r / dr;
             }
+            
+            float3x3 rotate_x(float a){float sa = sin(a); float ca = cos(a); return float3x3(float3(1.,.0,.0), float3(.0,ca,sa), float3(.0,-sa,ca));}
+            float3x3 rotate_y(float a){float sa = sin(a); float ca = cos(a); return float3x3(float3(ca,.0,sa), float3(.0,1.,.0), float3(-sa,.0,ca));}
+            float3x3 rotate_z(float a){float sa = sin(a); float ca = cos(a); return float3x3(float3(ca,sa,.0), float3(-sa,ca,.0), float3(.0,.0,1.));}
 
             float opSmoothUnion( float d1, float d2, float k ) {
                 float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 );
                 return lerp( d2, d1, h ) - k*h*(1.0-h);
             }
+            
+            //float opTwist( in sdf3d primitive, in float3 p )
+            //{
+            //    const float k = 10.0; // or some other amount
+            //    float c = cos(k*p.y);
+            //    float s = sin(k*p.y);
+            //    Matrix2x2  m = mat2(c,-s,s,c);
+            //    float3  q = float3(m*p.xz,p.y);
+            //    return float4( max(q,0.0), min(max(q.x,max(q.y,q.z)),0.0) );
+            //}
 
             float torus(float3 p, float ro, float ri)
             {
                 return length(float2(length(p.xy) - ro, p.z)) - ri;
             }
+            
+            float opTwist(in float3 p )
+            {
+                float k = 100.0; // or some other amount
+                float c = cos(k*p.y);
+                float s = sin(k*p.y);
+                float2x2  m = float2x2(c,-s,s,c);
+                float3  q = float3(mul(p.xz, m), p.y);
+                return torus(q, 2.2, 0.5);
+            }
+            
+            float opDisplace(in float3 p )
+            {
+                float d1 = torus(p, 2.2, 0.05);
+                float d2 = sin(1*p.x)*sin(2*p.y)*sin(1*p.z) * _Hats;
+                return d1+d2;
+            }
+            
 
             float GetDist(float3 p)
             {
                 float v = mTime(4, 0.05, 1);//(sin(_ControlledTime) + 1) / 2;
                 float frac = DE(p, map(v,0,1,1,14), 3, 256);
-                float tor =  torus(p, 2.2, 0.05);
+                float3x3 m_r = rotate_x(sin(_ControlledTime));
+                float3 p_r = mul(p, m_r);
+                float tor =  opDisplace(p_r);
                 return opSmoothUnion(frac, tor, 0.5);
             }
 

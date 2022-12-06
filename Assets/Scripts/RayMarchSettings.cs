@@ -19,4 +19,8 @@ public class RayMarchSettings : ScriptableObject {
     [Header("Meta")]
     public float timeScale;
     public bool MidiEnabled;
+    
+    [Header("Size")]
+    public AnimationCurve hatCurve;
+    public float hatTime = 0.2f;
 }
