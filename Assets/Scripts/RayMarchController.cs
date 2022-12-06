@@ -28,10 +28,11 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
     private static readonly int timeProp = Shader.PropertyToID("_ControlledTime");
     private static readonly int sizeProp = Shader.PropertyToID("_Size");
     private static readonly int spikynessProp = Shader.PropertyToID("_Spikyness");
+    private static readonly int RingDistortion = Shader.PropertyToID("_RingDistortion");
+    private static readonly int colorPushProp = Shader.PropertyToID("_ColorPush");
     private static readonly int redChannelProp = Shader.PropertyToID("_ColorR");
     private static readonly int greenChannelProp = Shader.PropertyToID("_ColorG");
     private static readonly int blueChannelProp = Shader.PropertyToID("_ColorB");
-    private static readonly int Hats = Shader.PropertyToID("_Hats");
 
     #endregion
 
@@ -44,12 +45,9 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
         rayMarchMat = rend.material;
 
 
-        osc.SetAddressHandler("/kick", OnKickMsg);
-        osc.SetAddressHandler("/snare", OnSnareMsg);
-
-        // not yet tested
-        osc.SetAddressHandler("/spike", OnSpikeMsg);
-        osc.SetAddressHandler("/color", OnColorMsg);
+        osc.SetAddressHandler("/Kick", OnKickMsg);
+        osc.SetAddressHandler("/Snare", OnSnareMsg);
+        osc.SetAddressHandler("/Hihat", OnHatsMsg);
 
         if (cfg.MidiEnabled)
         {
@@ -84,18 +82,34 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
     private void OnColorMsg(OscMessage msg)
     {
         float x = msg.GetFloat(0);
-        StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat,
-                                                colorPropertyName,
-                                                cfg.colorPushtime,
-                                                cfg.colorCurve,
-                                                1.0f,
-                                                1));
+        //StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat,
+        //                                        colorPropertyName,
+        //                                        cfg.colorPushtime,
+        //                                        cfg.colorCurve,
+        //                                        1.0f,
+        //                                        1));
     }
 
-    private void OnSpikeMsg(OscMessage msg)
+    private Sequence colorPushSequence;
+    private void OnColor()
     {
-        float additionalSpikyness = msg.GetFloat(0);
-        AddSpikyness(additionalSpikyness);
+        colorPushSequence?.Kill();
+        
+        rayMarchMat.SetFloat(redChannelProp, 0);
+        rayMarchMat.SetFloat(greenChannelProp, 0);
+        rayMarchMat.SetFloat(blueChannelProp, 0);
+        
+        colorPushSequence = DOTween.Sequence()
+            .Append(rayMarchMat.DOFloat(cfg.colorPushStrength, redChannelProp, cfg.colorPushtime).SetEase(cfg.colorCurveR))
+            .Join(rayMarchMat.DOFloat(cfg.colorPushStrength, greenChannelProp, cfg.colorPushtime).SetEase(cfg.colorCurveG))
+            .Join(rayMarchMat.DOFloat(cfg.colorPushStrength, blueChannelProp, cfg.colorPushtime).SetEase(cfg.colorCurveB))
+            .Play();
+
+    }
+
+    private void OnHatsMsg(OscMessage msg)
+    {
+        OnHihats();
     }
 
     private void OnSnareMsg(OscMessage msg)
@@ -103,20 +117,19 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
         OnSnare();
     }
 
-    private void OnSnare()
+    private void OnHihats()
     {
         AddSpikyness(cfg.addSpikynessOnSignal);
         StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat, redChannelProp, cfg.sizeTime, cfg.sizeCurve, 1f, 0));
     }
 
-    private TweenerCore<float, float, FloatOptions> hatsTweener;
+    private TweenerCore<float, float, FloatOptions> ringDistortionTweener;
 
-    private void OnHats()
+    private void OnSnare()
     {
-        hatsTweener?.Kill();
-        rayMarchMat.SetFloat(Hats, 0);
-        hatsTweener = rayMarchMat.DOFloat(1, "_Hats", cfg.hatTime).SetEase(cfg.hatCurve);
-        //StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat, "_Hats", cfg.hatTime, cfg.hatCurve, 1f, 0f));
+        ringDistortionTweener?.Kill();
+        rayMarchMat.SetFloat(RingDistortion, 0);
+        ringDistortionTweener = rayMarchMat.DOFloat(1, "_RingDistortion", cfg.hatTime).SetEase(cfg.hatCurve);
     }
 
     private void AddSpikyness(float additionalSpikyness)
@@ -149,7 +162,8 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
         }
         if (Input.GetKeyDown(KeyCode.H))
         {
-            OnHats();
+            OnHihats();
+            OnColor();
         }
 
         if (cfg.MidiEnabled)

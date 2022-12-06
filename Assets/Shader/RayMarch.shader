@@ -6,14 +6,15 @@ Shader "LE/RayMarch"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Speed ("Speed", Float) = 0
-        _ColorR ("Red Channel modifier", Float) = 1
-        _ColorG ("Greem Channel modifier", Float) = 1
-        _ColorB ("Blue Channel modifier", Float) = 1
+        _ColorR ("Red Channel modifier", Float) = .0
+        _ColorG ("Greem Channel modifier", Float) = .0
+        _ColorB ("Blue Channel modifier", Float) = .0
         _Spikyness ("Spikyness", Float) = 0.1
         _Lobsidedness ("Lobsidedness", Float) = 0
         _Size ("Size", Float) = 1.0
         _ControlledTime ("Controlled Time", Float) = 0.0
-        _Hats ("Hats", Float) = 0.0
+        _RingDistortion ("RingDistortion", Float) = 0.0
+        _ColorPush ("ColorPush", Float) = 0.0
     }
     SubShader
     {
@@ -54,7 +55,7 @@ Shader "LE/RayMarch"
             float _Spikyness;
             float _Lobsidedness;
             float _Size;
-            float _Hats;
+            float _RingDistortion;
             float _ControlledTime;
 
             v2f vert (appdata v)
@@ -100,7 +101,7 @@ Shader "LE/RayMarch"
                     // convert to polar coordinates
                     float x = acos(z.z / r);
                     float theta = atan2(x, z.y * _Lobsidedness);
-                    float phi = atan2(z.y, z.x) * 2;//_Spikyness;
+                    float phi = atan2(z.y, z.x) * _Spikyness;
                     dr = pow(r, Power - 0.5) * Power * dr + 1.0;
 
                     // scale and rotate the point
@@ -153,7 +154,7 @@ Shader "LE/RayMarch"
             float opDisplace(in float3 p )
             {
                 float d1 = torus(p, 2.2, 0.05);
-                float d2 = sin(1*p.x)*sin(2*p.y)*sin(1*p.z) * _Hats;
+                float d2 = sin(1*p.x)*sin(2*p.y)*sin(1*p.z) * _RingDistortion;
                 return d1+d2;
             }
             
@@ -162,7 +163,7 @@ Shader "LE/RayMarch"
             {
                 float v = mTime(4, 0.05, 1);//(sin(_ControlledTime) + 1) / 2;
                 float frac = DE(p, map(v,0,1,1,14), 3, 256);
-                float3x3 m_r = rotate_x(sin(_ControlledTime));
+                float3x3 m_r = rotate_x(_ControlledTime % (2 * 3.1415)); //sin(_ControlledTime)
                 float3 p_r = mul(p, m_r);
                 float tor =  opDisplace(p_r);
                 return opSmoothUnion(frac, tor, 0.5);
@@ -214,16 +215,18 @@ Shader "LE/RayMarch"
                     float3 p = ro + rd * d;
                     float3 n = GetNormal(p);
                     float3 ab = abs(n);
-                    float tx = pow(mTime(3,0,1), _ColorR);
-                    float ty = _ColorG;
-                    float tz = pow(mTime(5,0,1), _ColorB);
-                    float3 pal_col = pal( (ab.x + ab.y + ab.z ) / 3.0,
+                    
+                    float3 pal_col = pal( (ab.x * (1 - _ColorR) + ab.z * (1 - _ColorG) + ab.y * (1 - _ColorB)) / 3.0,
                         float3(0.5,0.5,0.5),
                         float3(0.5,0.5,0.5),
                         float3(1.0,1.0,0.5),
                         float3(0.8,0.90,0.30) );
 
                     col.rgb = pal_col;
+                    //float r = abs(_ColorR - ab.x);
+                    //float g = abs(_ColorG - ab.y);
+                    //float b = abs(_ColorB - ab.z);
+                    //col.rgb = float3(r,g,b);
                     //col.rgb = float3((1-tx)-ab.x,(1-ty)-ab.y,ab.z*tz);
                     //col.rgb = float3(1 - ab.x, 1 - ab.y, 1 - ab.z);
                     //col.rgb = float3(1 - ab.x, 1 - ab.y, 1 - ab.z);

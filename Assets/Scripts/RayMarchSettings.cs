@@ -7,7 +7,10 @@ public class RayMarchSettings : ScriptableObject {
     public float sizeTime = 0.2f;
 
     [Header("ColorPush")]
-    public AnimationCurve colorCurve;
+    public AnimationCurve colorCurveR;
+    public AnimationCurve colorCurveG;
+    public AnimationCurve colorCurveB;
+    public float colorPushStrength;
     public float colorPushtime;
 
     [Header("SpikePush")]
