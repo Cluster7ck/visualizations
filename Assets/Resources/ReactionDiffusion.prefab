@@ -44,16 +44,89 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rdfShader: {fileID: 7200000, guid: 6ceb1da60cbf68743801995c1afae156, type: 3}
-  kaleidoscopeShader: {fileID: 7200000, guid: f225b9cacdd869d4bac3b59e6860e67c, type: 3}
   sizeL: 1024
   dA: 0.41222242
   dB: 0.2800091
   feed: 0.036
   k: 0.057099342
   m: 0.2
-  kaleidoscopeSplit: 8
-  circlePoints: 9
+  circlePoints: 2
   pointWidth: 100
   iterationsPerPoint: 1
+  kaleidoscopePushCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3
+      value: 1
+      inSlope: 0.09051812
+      outSlope: 0.09051812
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  zoomFactor: 2
+  zoomTime: 0.2
+  zoomDefault: 1
+  replicatePushCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  replicateFactor: 32
+  replicateTime: 0.3
+  replicateDefault: 4
+  replicateDecreasingSpeed: 12
+  paletteTime: 0.4
+  replicateness: 4
   rend: {fileID: 0}
   doIt: 0

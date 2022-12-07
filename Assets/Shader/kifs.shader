@@ -3,8 +3,8 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Replicate ("Replicate", Float) = 32.0
-        _Zoom ("Replicate", Float) = 1.0
+        _Replicate ("Replicate", Float) = 3.9
+        _Zoom ("Zoom", Float) = 1.0
     }
     SubShader
     {
@@ -86,24 +86,18 @@
                 float x = r * cos(back);
                 float y = r * sin(back);
 
-                float2 ogId = float2(x,y);
-                uv = ogId;
-                uv *= _Zoom;
 
                 if(n < 4 )
                 {
-                    // Define the center of the texture
-                    float offset = _Zoom * 0.5;
-                    
-                    // Translate the UV coordinates back to the center
                     float2 centeredUV = (i.uv - 0.5) / _Zoom + 0.5;
-                    
-                    //uv_n = uv_n * float2(1 / _Zoom, 1 / _Zoom);
                     col += tex2D(_MainTex, centeredUV) * smoothstep(0.99,0.98, r);
                 }
                 else
                 {
-                    col += tex2D(_MainTex, (uv.xy + float2(1.0,1.0) ) / 2.0) * smoothstep(0.99,0.98, r);
+                    float2 ogId = float2(x,y);
+                    uv = ogId;
+                    float2 centeredUV = (uv) / _Zoom;
+                    col += tex2D(_MainTex, (centeredUV.xy + float2(1.0,1.0) ) / 2.0) * smoothstep(0.99,0.98, r);
                 }
 
                 return col;

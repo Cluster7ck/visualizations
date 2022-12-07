@@ -185,6 +185,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2996538790965458696, guid: 6ca578b62732f5d47811fdd937dbed37,
+        type: 3}
+      propertyPath: receivers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996538790965458696, guid: 6ca578b62732f5d47811fdd937dbed37,
+        type: 3}
+      propertyPath: receivers.Array.data[0]
+      value: 
+      objectReference: {fileID: 117943003}
     - target: {fileID: 7434652768659817752, guid: 6ca578b62732f5d47811fdd937dbed37,
         type: 3}
       propertyPath: m_Name
@@ -192,6 +202,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ca578b62732f5d47811fdd937dbed37, type: 3}
+--- !u!1 &117943003 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5458739729365066214, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
+    type: 3}
+  m_PrefabInstance: {fileID: 5458739728513589336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,63 +517,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
         type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
       propertyPath: rend
       value: 
       objectReference: {fileID: 2100581011}
     - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
         type: 3}
-      propertyPath: circlePoints
-      value: 2
+      propertyPath: zoomFactor
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
         type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[0].inSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[0].outSlope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[1].time
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[1].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[1].inSlope
-      value: 0.09051812
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[1].outSlope
-      value: 0.09051812
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[1].inWeight
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[1].outWeight
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458739729365066215, guid: 4c3b8736b4fb90a4cad5cd5b2f261274,
-        type: 3}
-      propertyPath: kaleidoscopePushCurve.m_Curve.Array.data[2].time
-      value: 1
+      propertyPath: paletteTime
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c3b8736b4fb90a4cad5cd5b2f261274, type: 3}

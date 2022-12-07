@@ -15,6 +15,7 @@ float m;
 int iterations;
 int centerY;
 int centerX;
+float palette;
 
 int kaleido;
 static const float PI = 3.14159265f;
@@ -22,6 +23,11 @@ static const float PI = 3.14159265f;
 float map(float s, float a1, float a2, float b1, float b2)
 {
     return b1 + (s-a1)*(b2-b1)/(a2-a1);
+}
+
+float3 pal( in float t, in float3 a, in float3 b, in float3 c, in float3 d )
+{
+    return a + b*cos( 6.28318*(c*t+d) );
 }
 
 float3 HUEtoRGB(in float H)
@@ -49,10 +55,8 @@ void RDFMain (uint3 id : SV_DispatchThreadID)
     float a = spot.x;
     float b = spot.y;
 
-    float sm = ((1 - 4 * m) / 4);
+    float sm = sm = 0.05;
     m = 0.2;
-    sm = 0.05;
-    //float sm2 = sm / 2;
 
     float laplaceA = 0;
     laplaceA += a * -1;
@@ -88,21 +92,30 @@ void RDFMain (uint3 id : SV_DispatchThreadID)
     Cells[id.x + id.y * sizeL].x = spot.x;
     Cells[id.x + id.y * sizeL].y = spot.y;
 
-    //Result[id.xy] = float4(v,v,v,1);
-    float mappedDist = map(dist*dist,0,hs*hs,0,1);
-    //float3 rgb = float3(v,v,v);
-    //float3 rgb = HSVtoRGB( float3( map(v, 0, 1, map(mappedDist, 0, 1, 0.22, 0.33), map(mappedDist, 0, 1, 0.7, 0.88)), 1, 1-v));
     float t = time * 0.07;
     float h = map((sin((v + t) * 4) + 1) / 2.0, 0, 1, 0, 0.8);// 0.667);
     float s = map((sin(v*time)+1)/2.0, 0, 1, 0.4, 1);
     float3 rgb = HSVtoRGB(float3(h, s, 1));
-    //cap
-    //v = v < 0.5 ? 0 : v;
 
-    /*
-    map(v, 0, 1, map(mappedDist, 0, 1, 0, 0.89), map(mappedDist, 0, 1, 0.5, 0.6))
-    */
+    // this blends between two palettes:
+    // https://iquilezles.org/articles/palettes/
+    float3 cc = float3(1.0,
+            map(palette, 0.0, 1.0, 0.7, 1.0),
+            map(palette, 0.0, 1.0, 0.4, 0.5));
+    float3 dc = float3(map(palette, 0.0, 1.0, 0.0, 0.8),
+        map(palette, 0.0, 1.0, 0.15, 0.9),
+        map(palette, 0.0, 1.0, 0.2, 0.3));
+    
+    //float3 col = pal((v + time*0.05) % 1.0,
+    //   float3(0.5,0.5,0.5),
+    //   float3(0.5,0.5,0.5),
+    //   cc,
+    //   dc);
+    float3 col = pal(fmod(v + time*0.05, 1.0),
+       float3(0.5,0.5,0.5),
+       float3(0.5,0.5,0.5),
+       cc,
+       dc);
 
-    Result[id.xy] = float4(rgb.x,rgb.y,rgb.z,1);
-    //Result[id.xy] = float4(v,v,v,1);
+    Result[id.xy] = float4(col, 1.0);//float4(rgb.x,rgb.y,rgb.z,1);
 }

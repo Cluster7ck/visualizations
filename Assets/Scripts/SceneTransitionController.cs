@@ -18,18 +18,26 @@ public class SceneTransitionController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            #if !UNITY_EDITOR
+#if !UNITY_EDITOR
             Application.Quit();
-            #endif
-            
+#endif
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            StartCoroutine(LoadScene("RayMarch"));
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            StartCoroutine(LoadScene("ReactionDiffusion"));
         }
     }
 
     private IEnumerator LoadScene(string name)
     {
-        if(!string.IsNullOrEmpty(currentLoaddedAdditive))
+        if (!string.IsNullOrEmpty(currentLoaddedAdditive))
         {
             var sceneToUnload = SceneManager.GetSceneByName(currentLoaddedAdditive);
             currentLifecycleController.unloadEvent.Invoke();
@@ -40,17 +48,18 @@ public class SceneTransitionController : MonoBehaviour
                 yield return null;
             }
         }
-        var sceneLoad = SceneManager.LoadSceneAsync(name,UnityEngine.SceneManagement.LoadSceneMode.Additive);
+        var sceneLoad = SceneManager.LoadSceneAsync(name, LoadSceneMode.Additive);
         while (!sceneLoad.isDone)
         {
             yield return null;
         }
+        currentLoaddedAdditive = name;
 
         var sceneToLoad = SceneManager.GetSceneByName(name);
-        currentLifecycleController = sceneToLoad.GetRootGameObjects()
+        currentLifecycleController = sceneToLoad
+            .GetRootGameObjects()
             .Select(gameObject => gameObject.GetComponent<SceneLifecycleController>())
-            .Where(slc => slc != null)
-            .FirstOrDefault();
+            .FirstOrDefault(slc => slc != null);
 
         UnityEngine.Assertions.Assert.IsNotNull(currentLifecycleController);
         currentLifecycleController.initEvent.Invoke(osc);

@@ -49,13 +49,19 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
 
     public void OnInit(OSC osc)
     {
+        if (initialized)
+        {
+            Debug.LogError("This should not happen");
+            return;
+        }
+        
         rayMarchMat = rend.material;
 
         if (osc != null)
         {
-            osc.SetAddressHandler("/Kick", OnKickMsg);
-            osc.SetAddressHandler("/Snare", OnSnareMsg);
-            osc.SetAddressHandler("/Hihat", OnHatsMsg);
+            osc.SetAddressHandler("/kick", OnKickMsg);
+            osc.SetAddressHandler("/snare", OnSnareMsg);
+            osc.SetAddressHandler("/hihat", OnHatsMsg);
         }
 
         if (cfg.MidiEnabled)
@@ -86,17 +92,6 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
     private void OnKick()
     {
         StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat, sizeProp, cfg.sizeTime, cfg.sizeCurve, 1f, 1f));
-    }
-
-    private void OnColorMsg(OscMessage msg)
-    {
-        float x = msg.GetFloat(0);
-        //StartCoroutine(Ext.AnimateMaterialValue(rayMarchMat,
-        //                                        colorPropertyName,
-        //                                        cfg.colorPushtime,
-        //                                        cfg.colorCurve,
-        //                                        1.0f,
-        //                                        1));
     }
 
     private Sequence colorPushSequence;
@@ -150,7 +145,6 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
             .OnComplete(() => spikeIncreasing = false);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!initialized) return;
