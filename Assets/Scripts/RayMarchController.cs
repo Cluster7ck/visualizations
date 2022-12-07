@@ -16,7 +16,7 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
     [ReadOnly] public float spikyness = 0.1f;
     private bool spikeIncreasing = false;
 
-
+    private OSC osc;
     private Dictionary<int, Action> channelToAction = new Dictionary<int, Action>();
     private float[] lastValues = new float[16 * 128];
 
@@ -59,6 +59,7 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
 
         if (osc != null)
         {
+            this.osc = osc;
             osc.SetAddressHandler("/kick", OnKickMsg);
             osc.SetAddressHandler("/snare", OnSnareMsg);
             osc.SetAddressHandler("/hihat", OnHatsMsg);
@@ -179,5 +180,11 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
         rayMarchMat.SetFloat(timeProp, controlledTime);
     }
 
-    public void OnUnload() { }
+    public void OnUnload()
+    {
+        if (osc)
+        {
+            osc.RemoveAllMessageHandlers();
+        }
+    }
 }

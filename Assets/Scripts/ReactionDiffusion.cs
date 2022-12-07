@@ -41,6 +41,7 @@ public class ReactionDiffusion : MonoBehaviour, ILifecycleReceiver
     private bool replicateIncreasing = false;
 
     private int reactionDiffusionKernelHandle;
+    private OSC osc;
 
     public Renderer rend;
     private RenderTexture texture;
@@ -95,6 +96,7 @@ public class ReactionDiffusion : MonoBehaviour, ILifecycleReceiver
         
         if (osc != null)
         {
+            this.osc = osc;
             osc.SetAddressHandler("/kick", OnKickMsg);
             osc.SetAddressHandler("/snare", OnSnareMsg);
             osc.SetAddressHandler("/hihat", OnHatsMsg);
@@ -176,7 +178,13 @@ public class ReactionDiffusion : MonoBehaviour, ILifecycleReceiver
 
     public void OnReset() { }
 
-    public void OnUnload() { }
+    public void OnUnload()
+    {
+        if (osc)
+        {
+            osc.RemoveAllMessageHandlers();
+        }
+    }
 
     float time = 0;
     float time2 = 0;
@@ -254,7 +262,6 @@ public class ReactionDiffusion : MonoBehaviour, ILifecycleReceiver
 
     private void OnSnare()
     {
-        Debug.Log("OnSnare");
         float endValue = goingUp ? 0 : 1;
         goingUp = !goingUp;
         
