@@ -5,6 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using UnityEngine.SceneManagement;
 
 public class RayMarchController : MonoBehaviour, ILifecycleReceiver
 {
@@ -15,7 +16,6 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
     [ReadOnly] public float spikyness = 0.1f;
     private bool spikeIncreasing = false;
 
-    private OSC osc;
 
     private Dictionary<int, Action> channelToAction = new Dictionary<int, Action>();
     private float[] lastValues = new float[16 * 128];
@@ -37,17 +37,26 @@ public class RayMarchController : MonoBehaviour, ILifecycleReceiver
     #endregion
 
     private bool initialized;
+    
+    void Awake()
+    {
+        var scene = SceneManager.GetSceneByName("StartUp");
+        if (!scene.IsValid())
+        {
+            OnInit(null);
+        }
+    }
 
     public void OnInit(OSC osc)
     {
-        Debug.Log("Initializing");
-        this.osc = osc;
         rayMarchMat = rend.material;
 
-
-        osc.SetAddressHandler("/Kick", OnKickMsg);
-        osc.SetAddressHandler("/Snare", OnSnareMsg);
-        osc.SetAddressHandler("/Hihat", OnHatsMsg);
+        if (osc != null)
+        {
+            osc.SetAddressHandler("/Kick", OnKickMsg);
+            osc.SetAddressHandler("/Snare", OnSnareMsg);
+            osc.SetAddressHandler("/Hihat", OnHatsMsg);
+        }
 
         if (cfg.MidiEnabled)
         {

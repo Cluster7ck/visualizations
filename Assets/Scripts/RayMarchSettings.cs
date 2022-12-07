@@ -1,7 +1,8 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "RayMarchSettings", menuName = "Viz/RayMarchSettings", order = 100)]
-public class RayMarchSettings : ScriptableObject {
+public class RayMarchSettings : ScriptableObject
+{
     [Header("Size")]
     public AnimationCurve sizeCurve;
     public float sizeTime = 0.2f;
