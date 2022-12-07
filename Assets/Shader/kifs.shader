@@ -69,31 +69,7 @@
             fixed4 frag(v2f i) : SV_Target
             {
                 float2 uv = (i.uv * 2.0 - 1.0);
-                //uv *= 0.3;
-                //uv = abs(uv);
                 float4 col = float4(0,0,0,1);
-                
-                float a = 180/_Replicate;
-                //float2 n = N(a/180.0 * 3.1415);
-                /*
-                uv -= n*min(0,dot(uv, n))*2;
-                col.rgb += smoothstep(0.01, 0, abs(d));
-                */
-                /*
-                uv.x = abs(uv.x);
-                uv.x -= 0.5;
-                uv -= n * min(0, dot(uv, n)) * 2;
-
-                float d = length(uv - float2(clamp(uv.x, -1, 1), 0));
-                col.rgb += smoothstep(0.03, 0, d);
-                
-                col.rg += uv.xy;
-                */
-                //col += tex2D(_MainTex, abs(uv));
-                /*
-                uv /= 2;
-                
-                */
                 
                 float n = _Replicate;
                 float r = sqrt(pow(uv.x, 2) + pow(uv.y, 2));
@@ -112,15 +88,23 @@
 
                 float2 ogId = float2(x,y);
                 uv = ogId;
-                
-                
-                //uv = float2(1 - uv.x, 1 - uv.y);
-                //uv.x = clamp(uv.x, 0, 1);
-                //uv.y = clamp(uv.y, 0, 1);
-
                 uv *= _Zoom;
-                col += tex2D(_MainTex, (uv.xy + float2(1.0,1.0) ) / 2.0) * smoothstep(0.99,0.98, r);
-                //col += tex2D(_MainTex, i.uv);
+
+                if(n < 4 )
+                {
+                    // Define the center of the texture
+                    float offset = _Zoom * 0.5;
+                    
+                    // Translate the UV coordinates back to the center
+                    float2 centeredUV = (i.uv - 0.5) / _Zoom + 0.5;
+                    
+                    //uv_n = uv_n * float2(1 / _Zoom, 1 / _Zoom);
+                    col += tex2D(_MainTex, centeredUV) * smoothstep(0.99,0.98, r);
+                }
+                else
+                {
+                    col += tex2D(_MainTex, (uv.xy + float2(1.0,1.0) ) / 2.0) * smoothstep(0.99,0.98, r);
+                }
 
                 return col;
             }

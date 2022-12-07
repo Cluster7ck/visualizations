@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 
-public class ReactionDiffusion : MonoBehaviour
+public class ReactionDiffusion : MonoBehaviour, ILifecycleReceiver
 {
     public ComputeShader rdfShader;
-    public ComputeShader kaleidoscopeShader;
     public int sizeL;
 
     [Range(0, 1)] public float dA = 1.0f;
@@ -15,41 +14,61 @@ public class ReactionDiffusion : MonoBehaviour
     [Range(0, 0.4f)] public float k = 0.062f;
     [Range(0, 1)] public float m = 0.2f;
 
-    public int kaleidoscopeSplit = 4;
-
     public int circlePoints;
     public int pointWidth;
     public int iterationsPerPoint = 10;
+    [SerializeField] private AnimationCurve kaleidoscopePushCurve;
 
-    private int kernelHandle;
-    private int kaleidoscopeKernel;
+    private int reactionDiffusionKernelHandle;
 
     public Renderer rend;
     private RenderTexture texture;
-    public RenderTexture kaleidoscopeTexture;
 
+    private Material kaleidoscopeMat;
     private ComputeBuffer cellBuffer;
     private Vector2[] grid;
     [SerializeField] private bool doIt;
 
+    #region Shader props
+    private static readonly int timeProp = Shader.PropertyToID("time");
+    private static readonly int sizeProp = Shader.PropertyToID("sizeL");
+    private static readonly int resultProp = Shader.PropertyToID("Result");
+    private static readonly int cellsProp = Shader.PropertyToID("Cells");
+    
+    private static readonly int dAProp = Shader.PropertyToID("dA");
+    private static readonly int dBProp = Shader.PropertyToID("dB");
+    private static readonly int feedProp = Shader.PropertyToID("feed");
+    private static readonly int kProp = Shader.PropertyToID("k");
+    private static readonly int mProp = Shader.PropertyToID("m");
+    private static readonly int centerXProp = Shader.PropertyToID("centerX");
+    private static readonly int centerYProp = Shader.PropertyToID("centerY");
+    
+    private static readonly int replicateProp = Shader.PropertyToID("_Replicate");
+    #endregion
+    
     void Awake()
+    {
+        var scene = SceneManager.GetSceneByName("StartUp");
+        if (!scene.IsValid())
+        {
+            OnInit(null);
+        }
+    }
+    
+    public void OnInit(OSC osc)
     {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 300;
-        kernelHandle = rdfShader.FindKernel("RDFMain");
-        kaleidoscopeKernel = kaleidoscopeShader.FindKernel("KalMain");
+        reactionDiffusionKernelHandle = rdfShader.FindKernel("RDFMain");
         grid = new Vector2[sizeL * sizeL];
-        //prev = new Cell[width][height];
-
-        var bla = (sizeL * sizeL) * 1.0f;
+        
         for (int x = 0; x < sizeL; x++)
         {
             for (int y = 0; y < sizeL; y++)
             {
-                float a = 1; //(x + y * sizeL) / bla;//1;
+                float a = 1;
                 float b = 0;
                 grid[x + y * sizeL] = new Vector2(a, b);
-                //prev[i][j] = new Cell(a, b);
             }
         }
 
@@ -81,33 +100,31 @@ public class ReactionDiffusion : MonoBehaviour
             sizeBox -= 2;
         }
 
-        CreateDumbStuff();
+        texture = Util.CreateTexture(sizeL);
         SetValues();
-    }
 
-    private void Start()
-    {
-        rend.material.mainTexture = kaleidoscopeTexture;
-        rdfShader.SetTexture(kernelHandle, "Result", kaleidoscopeTexture);
+        kaleidoscopeMat = rend.material;
+        rend.material.mainTexture = texture;
+        rdfShader.SetTexture(reactionDiffusionKernelHandle, resultProp, texture);
 
         cellBuffer = new ComputeBuffer(grid.Length, 8);
         cellBuffer.SetData(grid);
 
-        rdfShader.SetInt("sizeL", sizeL);
-        rdfShader.SetBuffer(kernelHandle, "Cells", cellBuffer);
+        rdfShader.SetInt(sizeProp, sizeL);
+        rdfShader.SetBuffer(reactionDiffusionKernelHandle, cellsProp, cellBuffer);
 
-        kaleidoscopeShader.SetInt("sizeL", sizeL);
-        kaleidoscopeShader.SetInt("n", kaleidoscopeSplit);
-        kaleidoscopeShader.SetTexture(kernelHandle, "Input", texture);
-        kaleidoscopeShader.SetTexture(kernelHandle, "Result", kaleidoscopeTexture);
         Shader.WarmupAllShaders();
         Compute();
     }
-
-    private void CreateDumbStuff()
+    
+    public void OnReset()
     {
-        texture = Util.CreateTexture(sizeL);
-        kaleidoscopeTexture = Util.CreateTexture(sizeL);
+        throw new System.NotImplementedException();
+    }
+
+    public void OnUnload()
+    {
+        throw new System.NotImplementedException();
     }
 
     float time = 0;
@@ -128,68 +145,78 @@ public class ReactionDiffusion : MonoBehaviour
         if(doTime)
         {
             time2 += Time.deltaTime;
-            rdfShader.SetFloat("time", time2);
+            rdfShader.SetFloat(timeProp, time2);
         }
         if (doIt)
         {
-             
             time += Time.deltaTime;
-            dB = Ext.Remap(Mathf.Sin(time), -1, 1, 0.28f, 0.535f);
-            dA = Ext.Remap(Mathf.Sin(time * 0.127f), -1, 1, dB+0.13f, 1);
-            feed = Ext.Remap(Mathf.Sin(time * 0.1137f), -1, 1, 0.028f, 0.062f);
-            k = Ext.Remap(Mathf.Sin(time * 0.137f), -1, 1, 0.057f, 0.064f);
-            rdfShader.SetFloat("dA", dA);
-            rdfShader.SetFloat("dB", dB);
-            rdfShader.SetFloat("feed", feed);
-            rdfShader.SetFloat("k", k);
-            rdfShader.SetFloat("m", m);
-            kaleidoscopeShader.SetInt("n", kaleidoscopeSplit);
+            dA = Mathf.Sin(time * 0.127f).Remap(-1, 1, dB+0.13f, 1);
+            dB = Mathf.Sin(time).Remap(-1, 1, 0.28f, 0.535f);
+            feed = Mathf.Sin(time * 0.1137f).Remap(-1, 1, 0.028f, 0.062f);
+            k = Mathf.Sin(time * 0.137f).Remap(-1, 1, 0.057f, 0.064f);
+            
+            SetValues();
+            //rdfShader.SetFloat(dAProp, dA);
+            //rdfShader.SetFloat(dBProp, dB);
+            //rdfShader.SetFloat(feedProp, feed);
+            //rdfShader.SetFloat(kProp, k);
+            //rdfShader.SetFloat(mProp, m);
         }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            OnSnare();
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            OnKick();
+        }
+        
         for (int i = 0; i < iterationsPerPoint; i++)
+        {
             Compute();
+        }
     }
 
     private void Compute()
     {
-        /*
-        texture.Release();
-        texture = new RenderTexture(sizeL, sizeL, 24);
-        texture.enableRandomWrite = true;
-        texture.Create();
-        rend.material.mainTexture = texture;
-        shader.SetTexture(kernelHandle, "Result", texture);
-        */
+        rdfShader.Dispatch(reactionDiffusionKernelHandle, sizeL / 32, sizeL / 32, 1);
+    }
 
-        rdfShader.Dispatch(kernelHandle, sizeL / 32, sizeL / 32, 1);
-        //kaleidoscopeShader.Dispatch(kaleidoscopeKernel, sizeL / 32, sizeL / 32, 1);
-
-        //rdfShader.SetInt("centerY", Mathf.FloorToInt(map(Screen.height - Input.mousePosition.y,0,Screen.height,0,sizeL)));
-        //rdfShader.SetInt("centerX", Mathf.FloorToInt(map(Screen.width - Input.mousePosition.x,0,Screen.width,0,sizeL)));
-        //rdfShader.SetInt("centerX",sizeL/2);
+    private void OnKick()
+    {
+        kaleidoscopeMat.DOFloat(4, "_Zoom", 1f).SetEase(kaleidoscopePushCurve);
+    }
+    
+    private void OnSnare()
+    {
+        kaleidoscopeMat.DOFloat(32, replicateProp, 1f).SetEase(kaleidoscopePushCurve);
     }
 
     private void OnDisable()
     {
-        cellBuffer.Release();
-        texture.Release();
+        cellBuffer?.Release();
+        cellBuffer = null;
+        if(texture) texture.Release();
+        texture = null;
     }
 
     private void OnDestroy()
     {
-        cellBuffer.Release();
-        texture.Release();
+        cellBuffer?.Release();
+        cellBuffer = null;
+        if(texture) texture.Release();
+        texture = null;
     }
     private void SetValues()
     {
-        rdfShader.SetFloat("dA", dA);
-        rdfShader.SetFloat("dB", dB);
-        rdfShader.SetFloat("feed", feed);
-        rdfShader.SetFloat("k", k);
-        rdfShader.SetInt("centerY", sizeL / 2);
-        rdfShader.SetInt("centerX", sizeL / 2);
-        rdfShader.SetFloat("m", m);
-        kaleidoscopeShader.SetInt("n", kaleidoscopeSplit);
-        //rdfShader.SetInt("iterations", iterationsPerPoint);
+        rdfShader.SetFloat(dAProp, dA);
+        rdfShader.SetFloat(dBProp, dB);
+        rdfShader.SetFloat(feedProp, feed);
+        rdfShader.SetFloat(kProp, k);
+        rdfShader.SetInt(centerYProp, sizeL / 2);
+        rdfShader.SetInt(centerXProp, sizeL / 2);
+        rdfShader.SetFloat(mProp, m);
     }
 
 #if UNITY_EDITOR
