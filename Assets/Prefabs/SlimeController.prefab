@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4237089389000737752
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4237089389000737702}
+  - component: {fileID: 4237089389000737753}
+  m_Layer: 0
+  m_Name: SlimeController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4237089389000737702
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4237089389000737752}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4237089389000737753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4237089389000737752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1de880ac4fcda424a87b63ff4711c3a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slimeShader: {fileID: 7200000, guid: a25821bf77613fb4c96b62b3880cefd5, type: 3}
+  trailMapProcessShader: {fileID: 7200000, guid: 0c5ebd4fc6a28794680a64384a343087,
+    type: 3}
+  size: 512
+  sensorSize: 3
+  sensorAngleSpacing: 0.392
+  sensorOffset: 10
+  numAgents: 100000
+  moveSpeed: 0.83
+  turnSpeed: 45
+  evaporateSpeed: 0.42
+  diffusionSpeed: 5
+  distanceBias: 0.462
+  colorLow: 0.551
+  colorHigh: 1
+  colorSaturation: 1
+  kaleidoscopePushCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3
+      value: 1
+      inSlope: 0.09051812
+      outSlope: 0.09051812
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  zoomFactor: 1.12
+  zoomTime: 0.2
+  zoomDefault: 1
+  moveSpeedDefault: 0.83
+  moveSpeedFactor: 8.17
+  moveSpeedTime: 0.2
+  moveSpeedPushCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.5335849
+      outSlope: 0.5335849
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.24752475
+    - serializedVersion: 3
+      time: 0.09159869
+      value: 1
+      inSlope: -1.9502262
+      outSlope: -1.9502262
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.25337932
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  evaporateSpeedDefault: 0.42
+  evaporateFactor: 0.724
+  evaporateSpeedPushCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.5335849
+      outSlope: 0.5335849
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.24752475
+    - serializedVersion: 3
+      time: 0.09159869
+      value: 1
+      inSlope: -1.9502262
+      outSlope: -1.9502262
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.25337932
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  diffusionDefault: 5
+  diffusionSubtract: 0.2
+  diffusionDecreasingSpeed: 1
+  diffusionTime: 0.2
+  rotationSpeed: 10
+  rotationSpeedDefault: 10
+  rotationSpeedKick: 50
+  targetRenderer: {fileID: 0}
+  seed: 123

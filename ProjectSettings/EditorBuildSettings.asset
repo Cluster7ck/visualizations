@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ReactionDiffusion.unity
     guid: 694d877a72078834999e353ff04246a7
+  - enabled: 1
+    path: Assets/Scenes/Slime.unity
+    guid: 906df243acb7e804aa199b012d426e1f
   m_configObjects: {}

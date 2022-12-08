@@ -33,6 +33,10 @@ public class SceneTransitionController : MonoBehaviour
         {
             StartCoroutine(LoadScene("ReactionDiffusion"));
         }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            StartCoroutine(LoadScene("Slime"));
+        }
     }
 
     private IEnumerator LoadScene(string name)

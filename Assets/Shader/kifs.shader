@@ -5,6 +5,7 @@
         _MainTex ("Texture", 2D) = "white" {}
         _Replicate ("Replicate", Float) = 3.9
         _Zoom ("Zoom", Float) = 1.0
+        _Rotation ("Rotation", Float) = 0.0
     }
     SubShader
     {
@@ -38,6 +39,7 @@
             float4 _MainTex_ST;
             float _Replicate;
             float _Zoom;
+            float _Rotation;
 
             v2f vert (appdata v)
             {
@@ -65,10 +67,18 @@
                 float x = a / b;
                 return x - floor(x);
             }
+            
+            float2x2 rotationMatrix(float angle)
+            {
+            	angle *= 3.1415 / 180.0;
+                float s=sin(angle), c=cos(angle);
+                return float2x2( c, -s, s, c );
+            }
 
             fixed4 frag(v2f i) : SV_Target
             {
                 float2 uv = (i.uv * 2.0 - 1.0);
+                uv = mul(rotationMatrix(_Rotation), uv);
                 float4 col = float4(0,0,0,1);
                 
                 float n = _Replicate;

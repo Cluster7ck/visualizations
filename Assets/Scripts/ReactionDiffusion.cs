@@ -1,10 +1,8 @@
-﻿using System.Data;
-using DG.Tweening;
+﻿using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 public class ReactionDiffusion : MonoBehaviour, ILifecycleReceiver

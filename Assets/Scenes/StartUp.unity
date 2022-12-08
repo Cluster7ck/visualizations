@@ -193,7 +193,7 @@ PrefabInstance:
     - target: {fileID: 8544780416190957274, guid: 0c1fda57794051146b11f29e39d17ebb,
         type: 3}
       propertyPath: startSceneName
-      value: ReactionDiffusion
+      value: Slime
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c1fda57794051146b11f29e39d17ebb, type: 3}
