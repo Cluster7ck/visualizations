@@ -514,6 +514,36 @@ PrefabInstance:
       propertyPath: targetRenderer
       value: 
       objectReference: {fileID: 2100581011}
+    - target: {fileID: 4237089389000737753, guid: 7047ced2b66c47f4ea8d8adb87b03bf9,
+        type: 3}
+      propertyPath: size
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 4237089389000737753, guid: 7047ced2b66c47f4ea8d8adb87b03bf9,
+        type: 3}
+      propertyPath: evaporateSpeedDefault
+      value: 0.466
+      objectReference: {fileID: 0}
+    - target: {fileID: 4237089389000737753, guid: 7047ced2b66c47f4ea8d8adb87b03bf9,
+        type: 3}
+      propertyPath: diffusionSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4237089389000737753, guid: 7047ced2b66c47f4ea8d8adb87b03bf9,
+        type: 3}
+      propertyPath: diffusionDefault
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4237089389000737753, guid: 7047ced2b66c47f4ea8d8adb87b03bf9,
+        type: 3}
+      propertyPath: numAgents
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4237089389000737753, guid: 7047ced2b66c47f4ea8d8adb87b03bf9,
+        type: 3}
+      propertyPath: fancyColor
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7047ced2b66c47f4ea8d8adb87b03bf9, type: 3}
 --- !u!1 &4237089388677808743 stripped

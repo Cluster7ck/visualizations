@@ -24,6 +24,7 @@ float colorLow;
 float colorHigh;
 float colorSaturation;
 float distanceBias;
+float fancyColor;
 
 float deltaTime;
 
@@ -180,5 +181,7 @@ void Color (uint3 id : SV_DispatchThreadID)
        float3(0.5,0.5,0.5),
        cc,
        dc);
-    Colors[id.xy] = float4(col, 1.0);//float4(c.x,c.y,c.z,1);
+    float4 ccc = lerp(TrailMap[id.xy], float4(col, 1.0), fancyColor);
+    //Colors[id.xy] = TrailMap[id.xy];//lerp(TrailMap[id.xy], float4(col, 1.0), fancyColor);//float4(c.x,c.y,c.z,1);
+    Colors[id.xy] = ccc;
 }

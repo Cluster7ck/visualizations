@@ -31,6 +31,7 @@ public class Slime : MonoBehaviour, ILifecycleReceiver
     [Range(0, 1f)] public float colorLow;
     [Range(0f, 1f)] public float colorHigh;
     [Range(0f, 1f)] public float colorSaturation;
+    [Range(0f, 1f)] public float fancyColor;
 
     [Header("Reactive Config")]
     [Header("OnKick")]
@@ -250,9 +251,10 @@ public class Slime : MonoBehaviour, ILifecycleReceiver
         {
             diffusionSpeed += Time.deltaTime * diffusionDecreasingSpeed;
             diffusionSpeed = Mathf.Clamp(diffusionSpeed, 0, diffusionDefault);
-            trailMapProcessShader.SetFloat("diffusionSpeed", diffusionSpeed);
+            trailMapProcessShader.SetFloat("diffuseSpeed", diffusionSpeed);
         }
 
+        slimeShader.SetFloat("fancyColor", ((Mathf.Sin(kaleidRotation / 80.0f) + 1 ) / 2).Remap(0,1,0,1.0f));
         // rotate the whole thing
         kaleidRotation += Time.deltaTime * rotationSpeed;
         kaleidoscopeMat.SetFloat(rotationProp, kaleidRotation);
@@ -406,9 +408,9 @@ public class Slime : MonoBehaviour, ILifecycleReceiver
         slimeShader.SetFloat("sensorOffset", sensorOffset);
         slimeShader.SetFloat("moveSpeed", moveSpeed);
         slimeShader.SetFloat("turnSpeed", turnSpeed);
-        slimeShader.SetFloat("evaporateSpeed", evaporateSpeed);
         slimeShader.SetInt("width", size);
         slimeShader.SetInt("height", size);
+        slimeShader.SetFloat("fancyColor", fancyColor);
 
         slimeShader.SetInt("numAgents", numAgents);
 
@@ -436,7 +438,7 @@ public class Slime : MonoBehaviour, ILifecycleReceiver
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (EditorApplication.isPlaying)
+        if (EditorApplication.isPlaying && initalized)
             SetValues();
     }
 #endif

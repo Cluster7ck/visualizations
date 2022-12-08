@@ -6,6 +6,8 @@
         _Replicate ("Replicate", Float) = 3.9
         _Zoom ("Zoom", Float) = 1.0
         _Rotation ("Rotation", Float) = 0.0
+        _BorderOn ("Border on", Float) = 1.0
+        _BorderSmooth ("Border smooth", Float) = 0.03
     }
     SubShader
     {
@@ -40,6 +42,8 @@
             float _Replicate;
             float _Zoom;
             float _Rotation;
+            float _BorderOn;
+            float _BorderSmooth;
 
             v2f vert (appdata v)
             {
@@ -97,17 +101,21 @@
                 float y = r * sin(back);
 
 
+                float rhs = 1.0 - _BorderSmooth;
+                float border = smoothstep(0.99, rhs, r);
                 if(n < 4 )
                 {
                     float2 centeredUV = (i.uv - 0.5) / _Zoom + 0.5;
-                    col += tex2D(_MainTex, centeredUV) * smoothstep(0.99,0.98, r);
+                    float4 tex = tex2D(_MainTex, centeredUV);
+                    col += lerp(tex, tex * border, _BorderOn);
                 }
                 else
                 {
                     float2 ogId = float2(x,y);
                     uv = ogId;
                     float2 centeredUV = (uv) / _Zoom;
-                    col += tex2D(_MainTex, (centeredUV.xy + float2(1.0,1.0) ) / 2.0) * smoothstep(0.99,0.98, r);
+                    float4 tex = tex2D(_MainTex, (centeredUV.xy + float2(1.0,1.0) ) / 2.0);
+                    col += lerp(tex, tex * border, _BorderOn);
                 }
 
                 return col;
